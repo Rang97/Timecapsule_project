@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.timecapsule.mapper.MemberMapper">
+
+    <insert id="insert" parameterType="com.example.timecapsule.domain.Member"
+            useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO MEMBER (username, password, name, role, created_at)
+        VALUES (#{username}, #{password}, #{name}, 'ROLE_USER', NOW())
+    </insert>
+
+    <select id="findByUsername" resultType="com.example.timecapsule.domain.Member">
+        SELECT user_id    AS userId,
+               username,
+               password,
+               name,
+               role,
+               created_at AS createdAt
+        FROM MEMBER
+        WHERE username = #{username}
+    </select>
+
+    <select id="countByUsername" resultType="int">
+        SELECT COUNT(*)
+        FROM MEMBER
+        WHERE username = #{username}
+    </select>
+
+</mapper>

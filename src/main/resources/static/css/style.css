@@ -1,0 +1,361 @@
+/* 1. 눈누 둥근모꼴 (DungGeunMo) 폰트 로드 */
+@font-face {
+    font-family: 'DungGeunMo';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10@1.0/DungGeunMo.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* 2. 눈누 Fixedsys (Fixedsys Excelsior) 폰트 로드 */
+@font-face {
+    font-family: 'Fixedsys';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_three@1.0/Fixedsys.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* 2. 레트로 모노크롬 그린 팔레트 & 픽셀 스타일 정의 */
+:root {
+    --bg-color: #191919;       /* 테두리 외곽 레트로 청록색 */
+    --accent-color: #01ff9d;    /* 밝은 강조색 / 입력창 배경 */
+    --text-color: #01ff9d;      /* 메인 텍스트 / 픽셀 테두리 색상 */
+    --error-color: #ff4956;     /* 에러 메시지 텍스트 색상 */
+
+    /* 픽셀 테두리 쉐도우 (box-shadow로 픽셀화) */
+    --pixel-border:
+            0 -3px 0 0 var(--text-color),
+            0 3px 0 0 var(--text-color),
+            -3px 0 0 0 var(--text-color),
+            3px 0 0 0 var(--text-color);
+
+    --pixel-border-sm:
+            0 -2px 0 0 var(--bg-color),
+            0 2px 0 0 var(--bg-color),
+            -2px 0 0 0 var(--bg-color),
+            2px 0 0 0 var(--bg-color);
+}
+
+/* 3. 전체 기본 스타일 */
+* {
+    box-sizing: border-box;
+    image-rendering: pixelated; /* 모든 요소의 픽셀 선명화 */
+}
+
+body {
+    font-family: 'DungGeunMo', 'Fixedsys', monospace, sans-serif;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+input, textarea, button, select {
+    font-family: 'DungGeunMo', 'Fixedsys', monospace, sans-serif;
+    -webkit-font-smoothing: none;
+}
+
+::-webkit-scrollbar {
+    width: 12px;  /* 세로 스크롤바 두께 */
+    height: 12px; /* 가로 스크롤바 두께 */
+}
+
+/* 스크롤바 트랙 (배경 영역) */
+::-webkit-scrollbar-track {
+    background-color: var(--bg-color);
+}
+
+/* 스크롤바 막대 (움직이는 부분) */
+::-webkit-scrollbar-thumb {
+    background-color: var(--text-color);
+}
+
+/* 4. 컨테이너 & 레이아웃 */
+.container {
+    width: 100%;
+    height: 560px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: var(--accent-color);
+    box-shadow: var(--pixel-border);
+    color: var(--bg-color);
+    margin-bottom: 0px;
+}
+
+.header-flex h2 {
+    letter-spacing: 2px;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.header-flex span {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-size: 1rem;
+    padding: 3px 6px;
+    box-shadow: var(--pixel-border-sm);
+}
+
+/* 5. 픽셀 카드 (윈도우 창 스타일) */
+.card {
+    background-color: var(--bg-color);
+    box-shadow: var(--pixel-border);
+    padding: 35px;
+    margin-bottom: 35px;
+    position: relative;
+}
+
+.title {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.6rem;
+    color: var(--text-color);
+    letter-spacing: 2px;
+    border-bottom: 3px dashed var(--text-color);
+    padding-bottom: 15px;
+    text-transform: uppercase;
+}
+
+/* 6. 폼 요소 (입력창, 텍스트에어리어) */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.form-group textarea{
+    line-height: 1.5;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    background-color: var(--bg-color);
+    border: none;
+    box-shadow: var(--pixel-border);
+    color: var(--text-color);
+    font-size: 1rem;
+    outline: none;
+}
+
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* 7. 에러 문구 스타일 */
+.error-text {
+    font-size: 1rem;
+    color: var(--error-color) !important;
+    background-color: var(--bg-color);
+    margin-top: 6px;
+}
+
+/* 8. 픽셀 버튼 시리즈 */
+.btn {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    padding: 12px 16px;
+    font-size: 1rem;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    margin-top: 8px;
+    box-shadow: var(--pixel-border);
+    transition: transform 0.05s ease;
+}
+
+.btn:active {
+    transform: translate(2px, 2px);
+}
+
+/* Primary 버튼 (가입하기, 보관하기) */
+.btn-primary {
+    background-color: var(--text-color);
+    color: var(--bg-color);
+}
+
+.btn-primary:hover {
+    background-color: #20e196;
+}
+
+/* Outline 버튼 (로그인 화면으로 돌아가기) */
+.btn-outline {
+    background-color: var(--text-color);
+    color: var(--bg-color);
+    margin-top: 10px;
+    transition: transform 0.05s ease;
+}
+
+.btn-outline:active {
+    transform: translate(2px, 2px);
+}
+
+.btn-outline:hover {
+    background-color: #20e196;
+}
+
+/* Small Danger 버튼 (로그아웃 버튼) */
+.btn-sm {
+    width: auto;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    margin-top: 0;
+}
+
+.btn-danger-outline {
+    background-color: var(--bg-color);
+    color: var(--accent-color);
+    border: 1px solid var(--bg-color);
+    box-shadow: var(--pixel-border-sm);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(70%) sepia(99%) saturate(487%) hue-rotate(91deg) brightness(104%) contrast(101%);
+    cursor: pointer;
+    padding: 2px;
+}
+
+/* 9. 타임캡슐 목록 및 개별 카드 스타일 */
+#diaryList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.empty-text {
+    text-align: center;
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+.time-card{
+    margin-right: 20px;
+    width: 500px;
+    height: 100%;
+}
+
+/* 동적으로 추가되는 타임캡슐 카드 스타일 */
+.diary-card {
+    background-color: var(--bg-color);
+    box-shadow: var(--pixel-border);
+    padding: 16px;
+    width: 500px;
+    height: 100%;
+    overflow-y: auto
+}
+
+.diary-card h3 {
+    margin: 0 0 6px 0;
+    font-size: 1.2rem;
+    border-bottom: 1px dashed var(--text-color);
+    padding-bottom: 6px;
+}
+
+.diary-card p {
+    margin: 8px 0;
+    font-size: 1rem;
+    line-height: 1.8;
+    white-space: pre-wrap;
+}
+
+.diary-card small {
+    display: block;
+    margin-top: 10px;
+    font-size: 0.7rem;
+    text-align: right;
+    opacity: 0.8;
+
+}
+
+.diary-item {
+    box-shadow: var(--pixel-border);
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+.diary-item-header {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 10px;
+    font-size: 0.8rem;
+    border-bottom: 1px dashed var(--text-color);
+}
+
+.diary-item-content {
+    padding-top: 10px ;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: white;
+}
+
+/* 레트로 모달 스타일 */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    width: 90%;
+    max-width: 500px;
+    box-shadow: var(--pixel-border);
+    padding: 20px;
+    border: none;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.modal-title{
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.modal-date {
+    font-size: 1rem;
+    margin-bottom: -20px;
+    opacity: 0.9;
+}
+
+.modal-text {
+    background-color: var(--bg-color);
+    color: white;
+    padding: 12px;
+    min-height: 100px;
+    max-height: 300px;
+    overflow-y: auto;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    box-shadow: var(--pixel-border);
+    white-space: pre-wrap;
+}
