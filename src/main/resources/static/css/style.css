@@ -1,4 +1,4 @@
-/* 1. 눈누 둥근모꼴 (DungGeunMo) 폰트 로드 */
+/* 폰트 로드 */
 @font-face {
     font-family: 'DungGeunMo';
     src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10@1.0/DungGeunMo.woff') format('woff');
@@ -6,7 +6,6 @@
     font-style: normal;
 }
 
-/* 2. 눈누 Fixedsys (Fixedsys Excelsior) 폰트 로드 */
 @font-face {
     font-family: 'Fixedsys';
     src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_three@1.0/Fixedsys.woff') format('woff');
@@ -14,14 +13,15 @@
     font-style: normal;
 }
 
-/* 2. 레트로 모노크롬 그린 팔레트 & 픽셀 스타일 정의 */
+/* 레트로 스타일 */
 :root {
-    --bg-color: #191919;       /* 테두리 외곽 레트로 청록색 */
+    --bg-color: #0b100c;       /* 어두운 배경색 */
     --accent-color: #01ff9d;    /* 밝은 강조색 / 입력창 배경 */
     --text-color: #01ff9d;      /* 메인 텍스트 / 픽셀 테두리 색상 */
+    --grid-color: rgba(1, 255, 157, 0.08); /* 연한 격자무늬 색상 */
     --error-color: #ff4956;     /* 에러 메시지 텍스트 색상 */
 
-    /* 픽셀 테두리 쉐도우 (box-shadow로 픽셀화) */
+
     --pixel-border:
             0 -3px 0 0 var(--text-color),
             0 3px 0 0 var(--text-color),
@@ -35,10 +35,9 @@
             2px 0 0 0 var(--bg-color);
 }
 
-/* 3. 전체 기본 스타일 */
 * {
     box-sizing: border-box;
-    image-rendering: pixelated; /* 모든 요소의 픽셀 선명화 */
+    image-rendering: pixelated;
 }
 
 body {
@@ -46,6 +45,10 @@ body {
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: unset;
     background-color: var(--bg-color);
+    background-image:
+            linear-gradient(var(--grid-color) 1px, transparent 1px),
+            linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+    background-size: 20px 20px; /* 격자 크기 조절 */
     color: var(--text-color);
     margin: 0;
     padding: 20px 10px;
@@ -65,20 +68,16 @@ input, textarea, button, select {
     height: 12px; /* 가로 스크롤바 두께 */
 }
 
-/* 스크롤바 트랙 (배경 영역) */
 ::-webkit-scrollbar-track {
     background-color: var(--bg-color);
 }
 
-/* 스크롤바 막대 (움직이는 부분) */
 ::-webkit-scrollbar-thumb {
     background-color: var(--text-color);
 }
 
-/* 4. 컨테이너 & 레이아웃 */
 .container {
     width: 100%;
-    height: 560px;
     max-width: 1000px;
     margin: 0 auto;
 }
@@ -91,7 +90,6 @@ input, textarea, button, select {
     background-color: var(--accent-color);
     box-shadow: var(--pixel-border);
     color: var(--bg-color);
-    margin-bottom: 0px;
 }
 
 .header-flex h2 {
@@ -113,7 +111,7 @@ input, textarea, button, select {
     background-color: var(--bg-color);
     box-shadow: var(--pixel-border);
     padding: 35px;
-    margin-bottom: 35px;
+    margin-bottom: 25px;
     position: relative;
 }
 
@@ -128,7 +126,6 @@ input, textarea, button, select {
     text-transform: uppercase;
 }
 
-/* 6. 폼 요소 (입력창, 텍스트에어리어) */
 .form-group {
     margin-bottom: 15px;
 }
@@ -155,13 +152,11 @@ input, textarea, button, select {
     outline: none;
 }
 
-
 textarea.form-control {
     resize: vertical;
     min-height: 120px;
 }
 
-/* 7. 에러 문구 스타일 */
 .error-text {
     font-size: 1rem;
     color: var(--error-color) !important;
@@ -169,7 +164,7 @@ textarea.form-control {
     margin-top: 6px;
 }
 
-/* 8. 픽셀 버튼 시리즈 */
+
 .btn {
     display: inline-block;
     width: 100%;
@@ -188,7 +183,6 @@ textarea.form-control {
     transform: translate(2px, 2px);
 }
 
-/* Primary 버튼 (가입하기, 보관하기) */
 .btn-primary {
     background-color: var(--text-color);
     color: var(--bg-color);
@@ -198,7 +192,6 @@ textarea.form-control {
     background-color: #20e196;
 }
 
-/* Outline 버튼 (로그인 화면으로 돌아가기) */
 .btn-outline {
     background-color: var(--text-color);
     color: var(--bg-color);
@@ -214,7 +207,6 @@ textarea.form-control {
     background-color: #20e196;
 }
 
-/* Small Danger 버튼 (로그아웃 버튼) */
 .btn-sm {
     width: auto;
     padding: 4px 8px;
@@ -235,7 +227,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     padding: 2px;
 }
 
-/* 9. 타임캡슐 목록 및 개별 카드 스타일 */
 #diaryList {
     display: flex;
     flex-direction: column;
@@ -251,17 +242,15 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .time-card{
     margin-right: 20px;
     width: 500px;
-    height: 100%;
 }
 
-/* 동적으로 추가되는 타임캡슐 카드 스타일 */
 .diary-card {
     background-color: var(--bg-color);
     box-shadow: var(--pixel-border);
-    padding: 16px;
+    padding: 35px;
     width: 500px;
-    height: 100%;
-    overflow-y: auto
+    height: 560px;
+    overflow-y: auto;
 }
 
 .diary-card h3 {
@@ -284,7 +273,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     font-size: 0.7rem;
     text-align: right;
     opacity: 0.8;
-
 }
 
 .diary-item {
@@ -308,7 +296,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     color: white;
 }
 
-/* 레트로 모달 스타일 */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -358,4 +345,76 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     margin-bottom: 15px;
     box-shadow: var(--pixel-border);
     white-space: pre-wrap;
+}
+
+.status-bar-container {
+    width: 100%;
+    max-width: 1000px;
+    margin-top: 20px;
+    background-color: var(--bg-color);
+    box-shadow: var(--pixel-border);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.time-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+}
+
+.time-label {
+    color: var(--text-color);
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.time-value {
+    color: #ffffff;
+    letter-spacing: 2px;
+}
+
+.capsule-progress-wrapper {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--text-color);
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+}
+
+.pixel-bar-outer {
+    width: 100%;
+    height: 16px;
+    background-color: #050806;
+    box-shadow: var(--pixel-border-sm);
+    padding: 2px;
+    display: flex;
+}
+
+.pixel-bar-inner {
+    height: 100%;
+    background-color: var(--text-color);
+    /* 픽셀 칸막이 무늬 */
+    background-image: linear-gradient(90deg, var(--bg-color) 2px, transparent 2px);
+    background-size: 10px 100%;
+    transition: width 0.4s ease;
+}
+
+.btn-delete {
+    background-color: var(--error-color);
+    color: white;
+    border: 1px solid var(--error-color);
+    box-shadow: 0 -2px 0 0 var(--error-color), 0 2px 0 0 var(--error-color), -2px 0 0 0 var(--error-color), 2px 0 0 0 var(--error-color);}
+
+
+.btn-delete:hover {
+    background-color: #d02e39;
 }

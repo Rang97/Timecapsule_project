@@ -6,7 +6,7 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<div class="container" style=display:flex>
+<div class="container" style="display:flex;">
     <div class="time-card">
         <div class="header-flex">
             <h2 th:text="${#authentication.principal.name} + '의 타임캡슐'">[MY TIME CAPSULE]</h2>
@@ -15,7 +15,7 @@
             </form>
         </div>
 
-        <!-- 1. 타임캡슐 작성 카드 -->
+        <!-- 타임캡슐 작성 -->
         <div class="card">
             <h3 class="title">TIME CAPSULE</h3>
             <form id="diaryForm">
@@ -34,11 +34,10 @@
                 <button type="submit" class="btn btn-primary">보관하기</button>
             </form>
         </div>
-
     </div>
 
     <div>
-        <!-- 2. 타임캡슐 목록 카드 -->
+        <!-- 2. 타임캡슐 목록 -->
         <div class="diary-card">
             <h2 class="title">TIMECAPSULE LIST</h2>
             <div id="diaryList">
@@ -48,6 +47,21 @@
     </div>
 </div>
 
+<!-- 하단 꾸밈 요소 -->
+<div class="status-bar-container">
+    <div class="time-display">
+        <span class="time-label">Record in</span>
+    </div>
+    <div class="time-display">
+        <span class="time-label">[SYSTEM DATE]</span>
+        <span id="currentDate" class="time-value">0000-00-00</span>
+        <span class="time-label">[SYSTEM TIME]</span>
+        <span id="currentTime" class="time-value">00:00:00</span>
+    </div>
+</div>
+
+
+<!-- 모달 -->
 <div id="capsuleModal" class="modal-overlay" style="display: none;">
     <div class="card modal-content">
         <div class="modal-header">
@@ -57,7 +71,11 @@
         <div class="modal-body">
             <div id="modalContent" class="modal-text"></div>
         </div>
-        <button type="button" class="btn btn-primary" onclick="closeModal()">닫기</button>
+        <div style="display: flex; gap: 10px;">
+            <button type="button" class="btn btn-primary" style="flex: 1;" onclick="closeModal()">닫기</button>
+            <button type="button" class="btn btn-delete" style="flex: 1;" onclick="deleteCurrentDiary()">삭제하기</button>
+
+        </div>
     </div>
 </div>
 
@@ -66,60 +84,127 @@
     const userId = /*[[${#authentication.principal.memberId}]]*/ 1;
     /*]]>*/
 
-    //불러온 타임캡슐 데이터들을 보관
     let diaryCache = [];
+    let currentModalDiaryId = null; // 현재 모달에 열린 타임캡슐 ID 보관
 
-    async function loadDiaries() {
-        const res = await fetch(`/api/diary/list/${userId}`);
-        const data = await res.json();
+    function updateClock() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
 
-        diaryCache = data || [];
+        document.getElementById('currentDate').innerText = `${year}-${month}-${day}`;
+        document.getElementById('currentTime').innerText = `${hours}:${minutes}:${seconds}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
 
-        const listDiv = document.getElementById('diaryList');
-        listDiv.innerHTML = '';
+    function calculateProgress(openDateStr) {
+        if (!openDateStr) return 0;
 
-        if (!data || data.length === 0) {
-            listDiv.innerHTML = '<p class="empty-text">보관된 타임캡슐이 없습니다.</p>';
-            return;
-        }
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
-        const today = new Date().toISOString().substring(0, 10);
+        const parts = openDateStr.substring(0, 10).split('-');
+        const openTime = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2])).getTime();
 
-        data.forEach((item, index)=> {
-            const openTime = item.openDate ? item.openDate.substring(0, 10) : '';
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'diary-item';
+        if (today >= openTime) return 100;
 
-            const canOpen = openTime <= today;
+        const diffDays = Math.ceil((openTime - today) / (1000 * 60 * 60 * 24));
+        if (diffDays >= 30) return 0;
 
-            if (canOpen) {
-                // 🔓 열람 가능할 때: 클릭 이벤트 추가 & 문구 변경
-                itemDiv.style.cursor = 'pointer';
-                itemDiv.onclick = () => openModal(index);
-                itemDiv.innerHTML = `
-                    <div class="diary-item-header">
-                        <span class="diary-item-title">${item.title}</span>
-                        <span class="diary-item-date">${openTime}</span>
-                    </div>
-                    <div class="diary-item-content">타임캡슐을 열어보세요.</div>
-                `;
-            } else {
-                // 🔒 개봉일 이전일 때: 클릭 불가
-                itemDiv.innerHTML = `
-                    <div class="diary-item-header">
-                        <span class="diary-item-title">${item.title}</span>
-                        <span class="diary-item-date">${openTime}</span>
-                    </div>
-                    <div class="diary-item-content">개봉날을 기대해주세요.</div>
-                `;
-            }
-            listDiv.appendChild(itemDiv);
-        });
+        const progress = Math.floor(((30 - diffDays) / 30) * 100);
+        return Math.max(progress, 0);
     }
 
+    async function loadDiaries() {
+        try {
+            const res = await fetch(`/api/diary/list/${userId}`);
+            const data = await res.json();
+
+            diaryCache = data || [];
+
+            const listDiv = document.getElementById('diaryList');
+            listDiv.innerHTML = '';
+
+            if (!data || data.length === 0) {
+                listDiv.innerHTML = '<p class="empty-text">보관된 타임캡슐이 없습니다.</p>';
+                return;
+            }
+
+            const now = new Date();
+            const todayTime = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+
+            data.forEach((item, index) => {
+                const openTimeStr = item.openDate ? item.openDate.substring(0, 10) : '';
+
+                let openTime = 0;
+                if (openTimeStr) {
+                    const parts = openTimeStr.split('-');
+                    openTime = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2])).getTime();
+                }
+
+                const canOpen = openTime && (todayTime >= openTime);
+                const progress = calculateProgress(openTimeStr);
+
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'diary-item';
+
+                if (canOpen) {
+                    // 개봉 가능
+                    itemDiv.style.cursor = 'pointer';
+                    itemDiv.onclick = () => openModal(index);
+                    itemDiv.innerHTML = `
+                        <div class="diary-item-header">
+                            <span class="diary-item-title">${item.title}</span>
+                            <span class="diary-item-date">${openTimeStr}</span>
+                        </div>
+                        <div class="diary-item-content">타임캡슐을 열어보세요!</div>
+                        <div class="capsule-progress-wrapper">
+                            <div class="progress-info">
+                                <span>UNLOCK PROGRESS</span>
+                                <span>100% (READY)</span>
+                            </div>
+                            <div class="pixel-bar-outer">
+                                <div class="pixel-bar-inner" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // 잠금 상태
+                    itemDiv.innerHTML = `
+                        <div class="diary-item-header">
+                            <span class="diary-item-title">${item.title}</span>
+                            <span class="diary-item-date">${openTimeStr}</span>
+                        </div>
+                        <div class="diary-item-content">개봉날을 기대해주세요.</div>
+                        <div class="capsule-progress-wrapper">
+                            <div class="progress-info">
+                                <span>UNLOCK PROGRESS</span>
+                                <span>${progress}%</span>
+                            </div>
+                            <div class="pixel-bar-outer">
+                                <div class="pixel-bar-inner" style="width: ${progress}%;"></div>
+                            </div>
+                        </div>
+                    `;
+                }
+                listDiv.appendChild(itemDiv);
+            });
+        } catch (e) {
+            console.error("데이터 로드 오류:", e);
+        }
+    }
+
+    // 모달 열기
     function openModal(index) {
         const item = diaryCache[index];
         if (!item) return;
+
+        currentModalDiaryId = item.id || item.diaryId;
 
         document.getElementById('modalTitle').innerText = item.title;
         document.getElementById('modalOpenDate').innerText = (item.openDate ? item.openDate.substring(0, 10) : '');
@@ -130,11 +215,40 @@
 
     function closeModal() {
         document.getElementById('capsuleModal').style.display = 'none';
+        currentModalDiaryId = null;
     }
 
+    // 삭제
+    async function deleteCurrentDiary() {
+        if (!currentModalDiaryId) {
+            alert('삭제할 타임캡슐 정보가 없습니다.');
+            return;
+        }
+
+        if (!confirm('정말 이 타임캡슐을 삭제하시겠습니까?')) return;
+
+        try {
+            const res = await fetch(`/api/diary/${currentModalDiaryId}`, {
+                method: 'DELETE'
+            });
+
+            if (res.ok) {
+                alert('타임캡슐이 삭제되었습니다.');
+                closeModal();
+                loadDiaries(); // 목록 갱신
+            } else {
+                const errorText = await res.text();
+                alert('삭제 실패: ' + errorText);
+            }
+        } catch (e) {
+            console.error('삭제 요청 중 오류 발생:', e);
+        }
+    }
+
+    // 타임캡슐 작성 모달
     document.getElementById('diaryForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const dateInput = document.getElementById('openDate').value; // "YYYY-MM-DD"
+        const dateInput = document.getElementById('openDate').value;
 
         if (!dateInput) {
             alert('날짜를 선택해주세요.');
@@ -145,7 +259,7 @@
             userId: parseInt(userId),
             title: document.getElementById('title').value,
             content: document.getElementById('content').value,
-            openDate: dateInput // YYYY-MM-DD 문자열 전송
+            openDate: dateInput
         };
 
         const res = await fetch('/api/diary/write', {

@@ -5,6 +5,7 @@ import com.example.timecapsule.service.DiaryService;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -26,6 +27,16 @@ public class DiaryController {
     @GetMapping("/list/{userID}")
     public List<Diary> getMyDiariesUSerID(@PathVariable Long userID) {
         return diaryService.getMyDiaries(userID);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteDiary(@PathVariable Long id) {
+        try{
+            diaryService.deleteDiary(id);
+            return ResponseEntity.ok("타입캡슐이 삭제되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @Data

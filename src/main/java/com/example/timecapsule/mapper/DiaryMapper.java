@@ -13,4 +13,7 @@ public interface DiaryMapper {
     Diary findByDiaryId(Long diaryId);
 
     void insert(Diary diary);
+
+    void deleteById(Long diaryId);
+
 }
